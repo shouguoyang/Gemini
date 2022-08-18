@@ -1,3 +1,8 @@
+# We implement ACFG Extraction and Similarity Calculation.
+
+please see ./application/README.md
+
+
 # DNN Binary Code Similarity Detection
 This repo provides an implementation of the Gemini network for binary code similarity detection in [this paper](https://arxiv.org/abs/1708.06525).
 

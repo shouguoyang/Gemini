@@ -1,5 +1,4 @@
 import numpy as np
-#import matplotlib.pyplot as plt
 from sklearn.metrics import auc, roc_curve
 from graphnnSiamese import graphnn
 import json

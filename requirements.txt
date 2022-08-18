@@ -11,7 +11,6 @@ pbr==3.1.1
 protobuf==3.5.0.post1
 scikit-learn==0.19.1
 scipy==1.0.0
-six==1.11.0
 sklearn==0.0
 tensorflow==1.4.1
 tensorflow-tensorboard==0.4.0rc3

@@ -2,7 +2,6 @@
 # time 2017:8:21  15:37
 # author ysg
 # function : extract features from executable binary file
-
 # revise in 20210129 for supporting IDAPro 7.x
 
 import sys, os

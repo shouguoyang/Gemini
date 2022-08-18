@@ -2,7 +2,6 @@ import tensorflow as tf
 print tf.__version__
 import sys
 sys.path.append("..")
-# import matplotlib.pyplot as plt
 import numpy as np
 from datetime import datetime
 from graphnnSiamese import graphnn
