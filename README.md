@@ -1,6 +1,6 @@
 # We implement ACFG Extraction and Similarity Calculation.
 
-please see ./application/README.md
+please see [README](./application/README.md)
 
 
 # DNN Binary Code Similarity Detection
