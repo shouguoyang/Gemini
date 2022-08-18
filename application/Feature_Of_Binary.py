@@ -25,6 +25,32 @@ o_arith = OPTYPEOFFSET + 102  # arithmetic instructions
 # 将当前路径添加入搜索路径
 sys.path.append(os.getcwd())
 #
+transfer_instructions_x86 = ['MOV', 'PUSH', 'POP', 'XCHG', 'IN', 'OUT', 'XLAT', 'LEA', 'LDS', 'LES', 'LAHF', 'SAHF',
+                         'PUSHF', 'POPF']
+# https://cdrdv2.intel.com/v1/dl/getContent/671200
+arithmetic_instructions_x86 = ['ADD', "ADC", "ADCX", "ADOX", "SBB" ,'SUB', 'MUL', 'DIV', 'INC', 'DEC', 'IMUL', 'IDIV', 'CMP', "NEG",
+                               "DAA", "DAS", "AAA", "AAS", "AAM", "AAD"]
+
+# https://azeria-labs.com/assembly-basics-cheatsheet/
+# https://www.ic.unicamp.br/~ranido/mc404/docs/ARMv7-cheat-sheet.pdf
+transfer_instructions_arm = {"B", "BAL", "BNE", "BEQ", "BPL", "BMI", "BCC", "BLO", "BCS", "BHS", "BVC", "BVS", "BGT", "BGE", "BLT", "BLE", "BHI" ,"BLS" }
+arithmetic_instructions_arm = {"add", "adc", "qadd", "sub", "sbc", "rsb", "qsub", "mul", "mla", "mls", "umull", "umlal", "smull",
+                               "smlal", "udiv", "sdiv", "cmp", "cmn", "tst"}
+
+# reference. https://uweb.engr.arizona.edu/~ece369/Resources/spim/MIPSReference.pdf
+transfer_instructions_mips = {"beqz", "beq", "bne", "bgez", "b", "bnez", "bgtz", "bltz", "blez", "bgt", "bge", "blt", "ble", "bgtu", "bgeu", "bltu", "bleu"}
+arithmetic_instructions_mips = {"add", "addu", "addi", "addiu", "and", "andi", "div", "divu", "mult", "multu", 
+                                "slt", "sltu", "slti", "sltiu"}
+
+# http://www.tentech.ca/downloads/other/PPC_Quick_Ref_Card-Rev1_Oct12_2010.pdf
+#http://class.ece.iastate.edu/arun/CprE281_F05/lab/labw10a/Labw10a_Files/PowerPC%20Assembly%20Quick%20Reference.htm
+transfer_instructions_ppc = {"b", "blt", "beq", "bge", "bgt", "blr", "bne"}
+arithmetic_instructions_ppc = {"add", "addi", "addme", "addze", "neg", "subf", "subfic", "subfme", "subze", "mulhw", "mulli",
+                               "mullw", "divw", "cmp", "cmpi", "cmpl", "cmpli"}
+
+
+
+
 transfer_instructions = ['MOV', 'PUSH', 'POP', 'XCHG', 'IN', 'OUT', 'XLAT', 'LEA', 'LDS', 'LES', 'LAHF', 'SAHF',
                          'PUSHF', 'POPF']
 arithmetic_instructions = ['ADD', 'SUB', 'MUL', 'DIV', 'XOR', 'INC', 'DEC', 'IMUL', 'IDIV', 'OR', 'NOT', 'SLL', 'SRL']

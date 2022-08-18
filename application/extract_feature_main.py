@@ -2,7 +2,7 @@
 #无需学会idapython 的使用，直接调用该类下的接口即可获得函数
 
 #系统ida所在的路径
-idapath = '/home/ubuntu/disk/hdd_1/ysg/tool/idapro-7.5/idat64'
+idapath = 'idat64'
 import os,time,commands,json
 import argparse
 
