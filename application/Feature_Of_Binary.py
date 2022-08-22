@@ -85,16 +85,39 @@ def wait_for_analysis_to_finish():
 
 wait_for_analysis_to_finish()
 
+import subprocess
+
+def execute_cmd(cmd, timeout=900):
+    """
+    execute system command
+    :param cmd:
+    :param f: 用于指定输出到文件显示，方便后台追踪长时间运行的程序
+    :param timeout:
+    :return:
+    """
+    try:
+        p = subprocess.run(cmd, shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT,
+                           timeout=timeout)
+
+    except subprocess.TimeoutExpired as e:
+        return {
+            'errcode': 401,
+            'errmsg': 'timeout'
+        }
+    return {
+        'errcode': p.returncode,
+        'errmsg': p.stdout.decode()
+    }
 # 通过file命令获得可执行文件的位数
 def get_ELF_bits(filename):
     # logger.INFO('file path and name: %s' % filename)
-    import commands
-    cmd = 'file -b %s' % filename
-    s, o = commands.getstatusoutput(cmd)
-    if s != 0:
-        print 'error', s, o
 
-    bits = o.strip().split(' ')[1]
+    cmd = 'file -b %s' % filename
+    # s, o = commands.getstatusoutput(cmd)
+    exe_res = execute_cmd(cmd)
+    if exe_res['errcode'] != 0:
+        raise ValueError('get elf error: {}'.format(exe_res['errmsg']))
+    bits = exe_res['errmsg'].strip().split(' ')[1]
     if (int(bits[:1]) == 32):
         return 32
 
@@ -366,29 +389,21 @@ class Attributes_BlockLevel(object):
         if (GetOpType(ea, n) == -1):
             return
         if (GetOpType(ea, n) == 1):
-            print
-            'General Register'
+            print('General Register')
         if (GetOpType(ea, n) == 2):
             addr = GetOperandValue(ea, n)
-            print
-            'addr :', hex(Dword(addr))
-            print
-            ' reference'
-            print
-            'segment type :', GetSegmentAttr(addr, SEGATTR_TYPE)
+            print('addr :', hex(Dword(addr)))
+            print(' reference')
+            print('segment type :', GetSegmentAttr(addr, SEGATTR_TYPE))
             return GetString(Dword(addr))
         elif (GetOpType(ea, n) == 3):
-            print
-            'base + index'
+            print('base + index')
         elif (GetOpType(ea, n) == 4):
-            print
-            'B+i+Displacement'
+            print('B+i+Displacement')
         elif (GetOpType(ea, n) == 5):
-            print
-            'immediate'
+            print('immediate')
         elif (GetOpType(ea, n) == 6):
-            print
-            'far address'
+            print('far address')
         return GetOperandValue(ea, n)
 
     def get_AdjacencyMatrix(self):
@@ -752,9 +767,9 @@ def test_caller():
     for func in Functions():
         AB = Attributes_BlockLevel(func_t(func))
         func_callers = AB.get_callers()
-        print "function {} {}".format(hex(func), Name(func))
+        print("function {} {}".format(hex(func), Name(func)))
         for caller_ea in func_callers:
-            print "callers {} {}".format(hex(caller_ea), Name(caller_ea))
+            print("callers {} {}".format(hex(caller_ea), Name(caller_ea)))
     # 测试使用代码块 下
 
 
