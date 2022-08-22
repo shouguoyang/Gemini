@@ -10,4 +10,5 @@ data/*
 *.asm
 *.res
 
+application/select_bin_paths.json
 
