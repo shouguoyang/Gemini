@@ -10,5 +10,6 @@ data/*
 *.asm
 *.res
 
-application/select_bin_paths.json
+application/select_bin_paths-test_dataset.json
 
+application/tmp/

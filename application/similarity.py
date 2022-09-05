@@ -2,9 +2,6 @@ import tensorflow as tf
 print tf.__version__
 import sys
 sys.path.append("..")
-import numpy as np
-from datetime import datetime
-from graphnnSiamese import graphnn
 from utils import *
 import os
 import argparse
@@ -143,7 +140,7 @@ if __name__ == '__main__':
 
     cve_dic = cve_dic_list[0]
     cve_func_name = cve_dic['func_name']
-    cve_func_fealis =  np.asarray(cve_dic["feature_list"])
+    cve_func_fealis = np.asarray(cve_dic["feature_list"])
     cve_func_fealis = np.expand_dims(cve_func_fealis, axis=0)
     cve_func_am = np.asarray(cve_dic["adjacent_matrix"])
     cve_func_am = np.expand_dims(cve_func_am, axis=0)

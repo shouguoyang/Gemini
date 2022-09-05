@@ -1,8 +1,5 @@
 import tensorflow as tf
 print tf.__version__
-import numpy as np
-from datetime import datetime
-from graphnnSiamese import graphnn
 from utils import *
 import os
 import argparse

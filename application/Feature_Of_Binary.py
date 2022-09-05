@@ -83,7 +83,6 @@ def wait_for_analysis_to_finish():
     '''
     autoWait()
 
-wait_for_analysis_to_finish()
 
 import subprocess
 
@@ -675,12 +674,12 @@ def get_att_block(blockEA, Attribute_Block):
     AB = Attribute_Block
     dic = {}
     dic['startEA'] = blockEA
-    dic['String_Constant'] = AB.get_All_Strings_of_Block(blockEA)
-    dic['Numberic_Constant'] = AB.get_Numeric_Constants_One_block(blockEA)
-    dic['No_Tran'] = AB.get_Trans_of_block(blockEA)
-    dic['No_Call'] = AB.get_Calls_BLock(blockEA)
-    dic['No_Instru'] = len(AB.get_All_instr_in_one_block(blockEA))
-    dic['No_Arith'] = AB.get_Arithmetics_Of_Block(blockEA)
+    dic['String_Constant'] = AB.get_All_Strings_of_Block(blockEA)  # x
+    dic['Numberic_Constant'] = AB.get_Numeric_Constants_One_block(blockEA)  #
+    dic['No_Tran'] = AB.get_Trans_of_block(blockEA)  #
+    dic['No_Call'] = AB.get_Calls_BLock(blockEA)  #
+    dic['No_Instru'] = len(AB.get_All_instr_in_one_block(blockEA))  #
+    dic['No_Arith'] = AB.get_Arithmetics_Of_Block(blockEA)  #
     dic['No_offspring'] = AB.get_Offspring_of_Block(blockEA)
     dic['Betweenness'] = round(AB.get_Betweenness_of_Block(blockEA), 3)
     dic['pre'] = [hex(ea) for ea in AB.get_PreNodes_of_blocks(blockEA)]
@@ -781,6 +780,7 @@ import json
 if __name__ == '__main__':
     # test_caller()
     try:
+        wait_for_analysis_to_finish()
         main()
     except Exception as e:
         import traceback

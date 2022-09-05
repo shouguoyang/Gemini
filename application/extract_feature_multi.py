@@ -54,9 +54,12 @@ def extract_bin(binary_path):
     gf = getFeature(binary_path)
     feature = gf.get_Feature_Function()
     out_file = Path(binary_path).resolve().parent.joinpath('{}_Gemini_features.json'.format(binary_path.name))
-
+    if out_file.exists():
+        return
     # func_dics = []
     func_name2features = {}
+    if feature is None:
+        return
     for dic in feature:
         nodes_ordered_list = []
         for node_addr in dic.keys():
@@ -101,7 +104,7 @@ def write_json(content, fname):
 
 def main():
     skip_suffix = {'.idb', '.idb64', '.id1', '.id0', '.id2', '.nam', '.til', '.i64', '.json'}
-    select_bins = read_json('select_bin_paths.json')
+    select_bins = read_json('select_bin_paths-filter_dataset.json')
     bar = tqdm(select_bins)
     for bin_path in bar:
         bin_path = Path(bin_path.replace('O0', 'O2'))
