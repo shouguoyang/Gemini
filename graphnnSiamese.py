@@ -98,6 +98,7 @@ class graphnn(object):
             self.log_file.write(string+'\n')
     
     def init(self, LOAD_PATH, LOG_PATH):
+        print('initializing network...')
         config = tf.ConfigProto()
         config.gpu_options.allow_growth = True
         sess = tf.Session(config=config)

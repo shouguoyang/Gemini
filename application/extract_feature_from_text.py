@@ -182,20 +182,29 @@ def write_json(content, fname):
         json.dump(content, f)
 
 
-def get_adj_matrix_and_graph(cfg, blocks):
+def get_succs_and_graph(cfg, blocks):
     block_size = blocks[-1][0] + 1
-    matrix = np.zeros((block_size, block_size))
+    # matrix = np.zeros((block_size, block_size))
     G = nx.DiGraph()
     for edge in cfg:
-        matrix[edge[0], edge[1]] = 1
+        # matrix[edge[0], edge[1]] = 1
         G.add_node(edge[0])
         G.add_node(edge[1])
         G.add_edge(edge[0], edge[1])
-    return matrix, G
+
+    succs = []
+    for block in blocks:
+        block_id = block[0]
+        try:
+            succs.append(list(G.successors(block_id)))
+        except nx.NetworkXError:
+            succs.append([])
+    return succs, G
 
 
 def get_off_spring(graph):
     visit = set()
+
     def dfs(block_id):
         if block_id in visit:
             return 0
@@ -276,7 +285,7 @@ def get_block_attrs(codes, blocks, G, arch):
     # block_id2betweenness = get_betweenness(G)
 
     block_features = []
-    for block_id, codes in block_id2codes.items():
+    for i, (block_id, codes) in enumerate(block_id2codes.items()):
         # codes: [[sd	$ra, 0x28($sp)]]
         block_attrs = _scan_codes(codes, arch=arch)
         block_attrs.update({'No_offspring': block_id2off_spring.get(block_id, 0),
@@ -296,6 +305,8 @@ def get_block_attrs(codes, blocks, G, arch):
                 # block_attrs['Betweenness'],  # gemini没用到
             )
         )
+    while len(block_features) <= blocks[-1][0]:
+        block_features.append((0, 0, 0, 0, 0, 0, 0))
     return block_features
 
 
@@ -311,26 +322,23 @@ def _get_arch(org_arch):
 
 
 def get_gemini_feature(func_info):
-    adj_matrix, G = get_adj_matrix_and_graph(cfg=func_info['cfg'], blocks=func_info['block'])
+    succs, G = get_succs_and_graph(cfg=func_info['cfg'], blocks=func_info['block'])
     feature_list = get_block_attrs(codes=func_info['code'],
                                    blocks=func_info['block'],
                                    G=G,
                                    arch=_get_arch(func_info['arch']))
 
     return {
-        func_info['fid']: {
-            'feature_list': feature_list,
-            'adjacent_matrix': adj_matrix.tolist(),
-        }
+        'fid': func_info['fid'],
+        'n_num': func_info['block'][-1][0] + 1,
+        'features': feature_list,
+        'succs': succs,
     }
 
-
 def test_gemini_feature_extract():
-    func_sample = read_json('tmp/func_info_wrong.json')
+    func_sample = read_json('tmp/block_size_error.json')
     res = get_gemini_feature(func_sample)
     print(res)
-
-
 
 if __name__ == '__main__':
     test_gemini_feature_extract()

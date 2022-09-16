@@ -1,4 +1,5 @@
 # embed feature in advance
+import json
 
 import tensorflow as tf
 import sys
@@ -43,10 +44,58 @@ parser.add_argument('--epoch', type=int, default=100,
 parser.add_argument('--batch_size', type=int, default=5,
                     help='batch size')
 parser.add_argument('--load_path', type=str,
-                    default='../saved_model/graphnn-model_best',
+                    default='../saved_model/graphnn-model-DFcon_best',
                     help='path for model loading, "#LATEST#" for the latest checkpoint')
 parser.add_argument('--log_path', type=str, default=None,
                     help='path for training log')
+
+
+def embed_by_binaries(gnn):
+    # load features
+    select_bins = read_json('select_bin_paths-filter_dataset.json')
+    bar = tqdm(select_bins)
+    for bin_path in bar:
+        bin_path = Path(bin_path.replace('O0', 'O2'))
+        if not bin_path.exists():
+            continue
+        bar.set_description('embedding Gemini features of {}'.format(bin_path.name))
+        feature_path = bin_path.parent.joinpath("{}_Gemini_features.json".format(bin_path.name))
+        if not feature_path.exists():
+            continue
+        func_name2features = read_json(feature_path)
+        func_name2embedding = {}
+        for func_name, features in func_name2features.items():
+            feature_list = np.asarray(features['feature_list'])
+            feature_list = np.expand_dims(feature_list, axis=0)
+            adj_matrix = features['adjacent_matrix']
+            adj_matrix = np.expand_dims(adj_matrix, axis=0)
+            func_name2embedding[func_name] = gnn.get_embed(feature_list, adj_matrix).reshape(-1)
+        write_pickle(func_name2embedding,
+                     str(bin_path.parent.joinpath("{}_Gemini_embedding.pkl".format(bin_path.name))))
+
+def embed_by_text(gnn, feature_path, embedding_path):
+    print('[embedding for text] from {} to {}'.format(feature_path, embedding_path))
+    f_embedding = open(embedding_path, 'w')
+    with open(feature_path, 'r') as f:
+        for line in tqdm(f, desc='embedding...'):
+            gemini_features = json.loads(line.strip())
+            if len(gemini_features['features']) != len(gemini_features['succs']):
+                # block feature error
+                continue
+            mat_size = len(gemini_features['succs'])
+            adj_matrix = np.zeros((mat_size, mat_size))
+
+            for x, ys in enumerate(gemini_features['succs']):
+                for y in ys:
+                    adj_matrix[x, y] = 1
+            feature_list = np.expand_dims(np.asarray(gemini_features['features']), axis=0)
+            adj_matrix = np.expand_dims(adj_matrix, axis=0)
+            embedding = gnn.get_embed(feature_list, adj_matrix)
+            f_embedding.write(json.dumps({'fid': gemini_features['fid'], 'embedding': embedding.tolist()}) + '\n')
+
+    f_embedding.close()
+
+
 
 if __name__ == '__main__':
     args = parser.parse_args()
@@ -108,23 +157,9 @@ if __name__ == '__main__':
     )
     gnn.init(LOAD_PATH, LOG_PATH)
 
-    # load features
-    select_bins = read_json('select_bin_paths-filter_dataset.json')
-    bar = tqdm(select_bins)
-    for bin_path in bar:
-        bin_path = Path(bin_path.replace('O0', 'O2'))
-        if not bin_path.exists():
-            continue
-        bar.set_description('embedding Gemini features of {}'.format(bin_path.name))
-        feature_path = bin_path.parent.joinpath("{}_Gemini_features.json".format(bin_path.name))
-        if not feature_path.exists():
-            continue
-        func_name2features = read_json(feature_path)
-        func_name2embedding = {}
-        for func_name, features in func_name2features.items():
-            feature_list = np.asarray(features['feature_list'])
-            feature_list = np.expand_dims(feature_list, axis=0)
-            adj_matrix = features['adjacent_matrix']
-            adj_matrix = np.expand_dims(adj_matrix, axis=0)
-            func_name2embedding[func_name] = gnn.get_embed(feature_list, adj_matrix).reshape(-1)
-        write_pickle(func_name2embedding, str(bin_path.parent.joinpath("{}_Gemini_embedding.pkl".format(bin_path.name))))
+    # embed_by_text(gnn,
+    #               feature_path='../data/train_gemini_features.json',
+    #               embedding_path='../data/train_gemini_embeddings.json')
+    embed_by_text(gnn,
+                  feature_path='../data/test_gemini_features.json',
+                  embedding_path='../data/test_gemini_embeddings.json')

@@ -9,7 +9,7 @@ data/*
 *.id*
 *.asm
 *.res
-
+tmp.py
 application/select_bin_paths-test_dataset.json
 
 application/tmp/

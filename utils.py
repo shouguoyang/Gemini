@@ -2,6 +2,7 @@ import numpy as np
 from sklearn.metrics import auc, roc_curve
 from graphnnSiamese import graphnn
 import json
+from tqdm import tqdm
 
 def get_f_name(DATA, SF, CM, OP, VS):
     F_NAME = []
@@ -14,6 +15,10 @@ def get_f_name(DATA, SF, CM, OP, VS):
 
 
 def get_f_dict(F_NAME):
+    """
+    :param F_NAME:
+    :return:
+    """
     name_num = 0
     name_dict = {}
     for f_name in F_NAME:
@@ -217,7 +222,7 @@ def get_pair(Gs, classes, M, st = -1, output_id = False, load_id = None):
         return X1_input,X2_input,node1_mask,node2_mask,y_input
 
 
-def train_epoch(model, graphs, classes, batch_size, load_data=None):
+def train_epoch(model, graphs, classes, batch_size, epoch, load_data=None):
     if load_data is None:
         epoch_data = generate_epoch_pair(graphs, classes, batch_size)
     else:
@@ -226,16 +231,21 @@ def train_epoch(model, graphs, classes, batch_size, load_data=None):
     perm = np.random.permutation(len(epoch_data))   #Random shuffle
 
     cum_loss = 0.0
-    for index in perm:
+    bar = tqdm(perm)
+    for i, index in enumerate(bar):
         cur_data = epoch_data[index]
         X1, X2, mask1, mask2, y = cur_data
         loss = model.train(X1, X2, mask1, mask2, y)
         cum_loss += loss
-
+        if i % 500 == 0:
+            bar.set_description('{} training loss:{}'.format(epoch, cum_loss/(i+1)))
+        # if i == 1000:
+        #     break
     return cum_loss / len(perm)
 
 
 def get_auc_epoch(model, graphs, classes, batch_size, load_data=None):
+    print 'calculating auc...'
     tot_diff = []
     tot_truth = []
 
