@@ -122,12 +122,12 @@ if __name__ == '__main__':
     gnn.init(LOAD_PATH, LOG_PATH)
 
     # Train
-    auc, fpr, tpr, thres = get_auc_epoch(gnn, Gs_train, classes_train,
-            BATCH_SIZE, load_data=valid_epoch)
-    gnn.say("Initial training auc = {0} @ {1}".format(auc, datetime.now()))
-    auc0, fpr, tpr, thres = get_auc_epoch(gnn, Gs_dev, classes_dev,
-            BATCH_SIZE, load_data=valid_epoch)
-    gnn.say("Initial validation auc = {0} @ {1}".format(auc0, datetime.now()))
+    # auc, fpr, tpr, thres = get_auc_epoch(gnn, Gs_train, classes_train,
+    #         BATCH_SIZE, load_data=valid_epoch)
+    # gnn.say("Initial training auc = {0} @ {1}".format(auc, datetime.now()))
+    # auc0, fpr, tpr, thres = get_auc_epoch(gnn, Gs_dev, classes_dev,
+    #         BATCH_SIZE, load_data=valid_epoch)
+    # gnn.say("Initial validation auc = {0} @ {1}".format(auc0, datetime.now()))
 
     best_auc = 0
     for i in range(1, MAX_EPOCH+1):
